@@ -153,6 +153,24 @@ code {
 }
 #upload-status { margin-top: 0.6rem; }
 
+#paste-details { margin-top: 1rem; }
+#paste-details summary {
+  cursor: pointer;
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+}
+#csv-paste {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  resize: vertical;
+}
+#paste-import-btn { margin-top: 0.6rem; }
+
 .add-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

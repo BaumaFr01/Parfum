@@ -331,6 +331,24 @@ document.getElementById("csv-input").addEventListener("change", async (e) => {
   e.target.value = "";
 });
 
+document.getElementById("paste-import-btn").addEventListener("click", () => {
+  const text = document.getElementById("csv-paste").value;
+  const parsed = parseCsv(text);
+  const status = document.getElementById("upload-status");
+
+  if (parsed.length === 0) {
+    status.textContent = "Es konnten keine gültigen Einträge aus dem eingefügten Text gelesen werden.";
+    return;
+  }
+
+  perfumes = perfumes.concat(parsed);
+  savePerfumes();
+  renderList();
+  renderRecommendations();
+  status.textContent = `${parsed.length} Parfüm(s) aus eingefügtem Text hinzugefügt.`;
+  document.getElementById("csv-paste").value = "";
+});
+
 document.getElementById("load-sample-btn").addEventListener("click", () => {
   const parsed = parseCsv(SAMPLE_CSV);
   perfumes = perfumes.concat(parsed);
