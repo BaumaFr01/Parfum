@@ -399,14 +399,9 @@ async function fetchWeather() {
     const [desc, icon] = WEATHER_CODES[current.weathercode] || ["Unbekannt", "🌡️"];
 
     content.innerHTML = `
-      <div class="weather-icon">${icon}</div>
-      <div class="weather-temp">${currentTemp.toFixed(1)}°C</div>
-      <div class="weather-details">
-        <div>${desc}</div>
-        <div>💧 Luftfeuchtigkeit: ${current.relative_humidity_2m}%</div>
-        <div>💨 Wind: ${current.wind_speed_10m} km/h</div>
-        <div>📍 ${escapeHtml(currentLocation.label)}</div>
-      </div>`;
+      <span class="weather-icon">${icon}</span>
+      <span class="weather-temp tabular">${currentTemp.toFixed(1)}°C</span>
+      <span class="weather-meta-line">${desc} · 💧 ${current.relative_humidity_2m}% · 💨 ${current.wind_speed_10m} km/h</span>`;
 
     renderRecommendations();
   } catch (e) {

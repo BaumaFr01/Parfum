@@ -3,30 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parfüm-Wetter-Berater</title>
-<link rel="stylesheet" href="style.css?v=4">
+<title>Duftkompass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header class="app-header">
-  <h1>🌡️ Parfüm-Wetter-Berater</h1>
-  <p class="subtitle" id="app-subtitle">Das passende Parfüm – abgestimmt auf das aktuelle Wetter</p>
+  <p class="eyebrow">Parfüm · Wetter · Stil</p>
+  <h1>Duftkompass</h1>
+  <p class="subtitle">Das passende Parfüm für Büro und Freizeit – abgestimmt auf dein Wetter</p>
 </header>
 
 <main>
   <!-- Wetter -->
-  <section class="card" id="weather-card">
-    <h2>Aktuelles Wetter · <span id="location-label">73575 Leinzell</span></h2>
+  <section class="card weather-card" id="weather-card">
+    <div class="weather-card-head">
+      <h2>Wetter · <span id="location-label">73575 Leinzell</span></h2>
+      <button id="refresh-weather-btn" class="icon-btn-plain" title="Wetter aktualisieren" aria-label="Wetter aktualisieren">↻</button>
+    </div>
     <div id="weather-content" class="weather-content">
       <p class="hint">Wetterdaten werden geladen…</p>
     </div>
-    <button id="refresh-weather-btn" class="btn secondary">🔄 Wetter aktualisieren</button>
 
-    <form id="location-form" class="location-form">
-      <input type="text" id="location-input" placeholder="Ort oder PLZ (z. B. 73575 oder Stuttgart)">
-      <button type="submit" class="btn secondary">Ort übernehmen</button>
-      <button type="button" id="location-reset-btn" class="btn link">Standardort (Leinzell)</button>
-    </form>
-    <p id="location-status" class="hint"></p>
+    <details id="location-details">
+      <summary>Ort ändern</summary>
+      <form id="location-form" class="location-form">
+        <input type="text" id="location-input" placeholder="Ort oder PLZ (z. B. 73575 oder Stuttgart)">
+        <button type="submit" class="btn secondary small">Übernehmen</button>
+        <button type="button" id="location-reset-btn" class="btn link small">Standard (Leinzell)</button>
+      </form>
+      <p id="location-status" class="hint"></p>
+    </details>
   </section>
 
   <!-- Empfehlungen -->
@@ -34,11 +43,11 @@
     <h2>Empfohlene Parfüms</h2>
     <div class="recommendation-columns">
       <div class="recommendation-column">
-        <h3>🏢 Büro</h3>
+        <h3><span class="dot office-dot"></span> Büro</h3>
         <ul id="office-list" class="recommendation-list"><li class="hint">Warte auf Wetterdaten…</li></ul>
       </div>
       <div class="recommendation-column">
-        <h3>🌳 Freizeit</h3>
+        <h3><span class="dot leisure-dot"></span> Freizeit</h3>
         <ul id="leisure-list" class="recommendation-list"><li class="hint">Warte auf Wetterdaten…</li></ul>
       </div>
     </div>
@@ -96,6 +105,6 @@
   <p>Wetterdaten: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></p>
 </footer>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
