@@ -309,9 +309,9 @@ async function fetchWeather() {
 
 /* -------------------- Event-Handler -------------------- */
 
-document.getElementById("refresh-weather-btn").addEventListener("click", fetchWeather);
+document.getElementById("refresh-weather-btn")?.addEventListener("click", fetchWeather);
 
-document.getElementById("csv-input").addEventListener("change", async (e) => {
+document.getElementById("csv-input")?.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const text = await file.text();
@@ -331,7 +331,7 @@ document.getElementById("csv-input").addEventListener("change", async (e) => {
   e.target.value = "";
 });
 
-document.getElementById("paste-import-btn").addEventListener("click", () => {
+document.getElementById("paste-import-btn")?.addEventListener("click", () => {
   const text = document.getElementById("csv-paste").value;
   const parsed = parseCsv(text);
   const status = document.getElementById("upload-status");
@@ -349,7 +349,7 @@ document.getElementById("paste-import-btn").addEventListener("click", () => {
   document.getElementById("csv-paste").value = "";
 });
 
-document.getElementById("load-sample-btn").addEventListener("click", () => {
+document.getElementById("load-sample-btn")?.addEventListener("click", () => {
   const parsed = parseCsv(SAMPLE_CSV);
   perfumes = perfumes.concat(parsed);
   savePerfumes();
@@ -358,7 +358,7 @@ document.getElementById("load-sample-btn").addEventListener("click", () => {
   document.getElementById("upload-status").textContent = `${parsed.length} Beispiel-Parfüms hinzugefügt.`;
 });
 
-document.getElementById("clear-list-btn").addEventListener("click", () => {
+document.getElementById("clear-list-btn")?.addEventListener("click", () => {
   if (perfumes.length === 0) return;
   if (!confirm("Wirklich die gesamte Parfüm-Liste löschen?")) return;
   perfumes = [];
@@ -367,7 +367,7 @@ document.getElementById("clear-list-btn").addEventListener("click", () => {
   renderRecommendations();
 });
 
-document.getElementById("add-form").addEventListener("submit", (e) => {
+document.getElementById("add-form")?.addEventListener("submit", (e) => {
   e.preventDefault();
   const name = document.getElementById("f-name").value.trim();
   const brand = document.getElementById("f-brand").value.trim();
