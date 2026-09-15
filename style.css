@@ -106,6 +106,30 @@ code {
 .weather-details div { margin-bottom: 0.15rem; }
 .weather-error { color: var(--danger); }
 
+.location-form {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.location-form input {
+  flex: 1 1 220px;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.btn.link {
+  background: none;
+  color: var(--text-muted);
+  text-decoration: underline;
+  padding: 0.55rem 0.3rem;
+}
+#location-status { margin-top: 0.5rem; margin-bottom: 0; }
+
 /* Recommendations */
 .recommendation-columns {
   display: grid;
@@ -185,32 +209,69 @@ code {
 }
 .add-form button { grid-column: 1 / -1; justify-self: start; }
 
-/* Table */
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th, td {
-  text-align: left;
-  padding: 0.5rem 0.6rem;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
+/* Parfüm-Liste (Karten) */
+.perfume-full-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
-td:nth-child(5) { white-space: normal; }
+.perfume-full-list > li.hint { padding: 0.4rem 0; }
+
+.perfume-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+}
+.perfume-card-main { min-width: 0; }
+.perfume-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.perfume-card-meta {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-top: 0.2rem;
+}
+.perfume-card-notes {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-top: 0.2rem;
+}
+
 .tag {
   font-size: 0.75rem;
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
+  font-weight: 400;
 }
 .tag.buero { background: var(--office-bg); color: var(--office); }
 .tag.freizeit { background: var(--leisure-bg); color: var(--leisure); }
 .tag.beides { background: #f0e8d8; color: var(--accent-dark); }
 
 .icon-btn {
-  background: none;
+  flex: 0 0 auto;
+  background: var(--danger);
+  color: #fff;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
-  color: var(--danger);
+  font-size: 0.95rem;
+  padding: 0.45rem 0.7rem;
+  min-height: 44px;
+  min-width: 44px;
 }
+.icon-btn:hover { filter: brightness(1.1); }
 
 footer {
   text-align: center;

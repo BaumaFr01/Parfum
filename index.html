@@ -9,17 +9,24 @@
 <body>
 <header class="app-header">
   <h1>🌡️ Parfüm-Wetter-Berater</h1>
-  <p class="subtitle">Das passende Parfüm für Leinzell (73575) – abgestimmt auf das aktuelle Wetter</p>
+  <p class="subtitle" id="app-subtitle">Das passende Parfüm – abgestimmt auf das aktuelle Wetter</p>
 </header>
 
 <main>
   <!-- Wetter -->
   <section class="card" id="weather-card">
-    <h2>Aktuelles Wetter · 73575 Leinzell</h2>
+    <h2>Aktuelles Wetter · <span id="location-label">73575 Leinzell</span></h2>
     <div id="weather-content" class="weather-content">
       <p class="hint">Wetterdaten werden geladen…</p>
     </div>
     <button id="refresh-weather-btn" class="btn secondary">🔄 Wetter aktualisieren</button>
+
+    <form id="location-form" class="location-form">
+      <input type="text" id="location-input" placeholder="Ort oder PLZ (z. B. 73575 oder Stuttgart)">
+      <button type="submit" class="btn secondary">Ort übernehmen</button>
+      <button type="button" id="location-reset-btn" class="btn link">Standardort (Leinzell)</button>
+    </form>
+    <p id="location-status" class="hint"></p>
   </section>
 
   <!-- Empfehlungen -->
@@ -79,18 +86,9 @@
   <!-- Liste -->
   <section class="card" id="list-card">
     <h2>Meine Parfüm-Liste (<span id="list-count">0</span>)</h2>
-    <div class="table-wrap">
-      <table id="perfume-table">
-        <thead>
-          <tr>
-            <th>Name</th><th>Marke</th><th>Anlass</th><th>Temp.-Bereich</th><th>Notiz</th><th></th>
-          </tr>
-        </thead>
-        <tbody id="perfume-table-body">
-          <tr><td colspan="6" class="hint">Noch keine Parfüms hinterlegt.</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <ul id="perfume-list" class="perfume-full-list">
+      <li class="hint">Noch keine Parfüms hinterlegt.</li>
+    </ul>
   </section>
 </main>
 

@@ -2,15 +2,15 @@
 
 /* -------------------- Konfiguration -------------------- */
 
-const LOCATION = {
-  name: "Leinzell",
-  plz: "73575",
-  // Fallback-Koordinaten (falls Geocoding-API nicht erreichbar ist)
-  fallbackLat: 48.8494,
-  fallbackLon: 9.8792,
+const DEFAULT_LOCATION = {
+  query: "73575 Leinzell",
+  label: "73575 Leinzell",
+  lat: 48.8494,
+  lon: 9.8792,
 };
 
 const STORAGE_KEY = "parfum-liste";
+const STORAGE_KEY_LOCATION = "parfum-standort";
 
 const WEATHER_CODES = {
   0: ["Klarer Himmel", "☀️"],
@@ -47,6 +47,7 @@ const WEATHER_CODES = {
 
 let perfumes = loadPerfumes();
 let currentTemp = null;
+let currentLocation = loadLocation();
 
 /* -------------------- Persistenz -------------------- */
 
@@ -61,6 +62,19 @@ function loadPerfumes() {
 
 function savePerfumes() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(perfumes));
+}
+
+function loadLocation() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_LOCATION);
+    return raw ? JSON.parse(raw) : { ...DEFAULT_LOCATION };
+  } catch {
+    return { ...DEFAULT_LOCATION };
+  }
+}
+
+function saveLocation() {
+  localStorage.setItem(STORAGE_KEY_LOCATION, JSON.stringify(currentLocation));
 }
 
 /* -------------------- Hilfsfunktionen -------------------- */
@@ -168,30 +182,33 @@ Le Labo Santal 33,Le Labo,Büro,0,15,Holzig-warm für kühle Bürotage
 /* -------------------- Rendering: Liste -------------------- */
 
 function renderList() {
-  const body = document.getElementById("perfume-table-body");
+  const list = document.getElementById("perfume-list");
   const count = document.getElementById("list-count");
   count.textContent = perfumes.length;
 
   if (perfumes.length === 0) {
-    body.innerHTML = `<tr><td colspan="6" class="hint">Noch keine Parfüms hinterlegt.</td></tr>`;
+    list.innerHTML = `<li class="hint">Noch keine Parfüms hinterlegt.</li>`;
     return;
   }
 
-  body.innerHTML = perfumes
+  list.innerHTML = perfumes
     .map(
       (p) => `
-    <tr>
-      <td>${escapeHtml(p.name)}</td>
-      <td>${escapeHtml(p.brand || "–")}</td>
-      <td><span class="tag ${p.occasion}">${occasionLabel(p.occasion)}</span></td>
-      <td>${p.minTemp}°C – ${p.maxTemp}°C</td>
-      <td>${escapeHtml(p.notes || "")}</td>
-      <td><button class="icon-btn" data-id="${p.id}" title="Löschen">🗑️</button></td>
-    </tr>`
+    <li class="perfume-card">
+      <div class="perfume-card-main">
+        <div class="perfume-card-title">
+          <span>${escapeHtml(p.name)}</span>
+          <span class="tag ${p.occasion}">${occasionLabel(p.occasion)}</span>
+        </div>
+        <div class="perfume-card-meta">${escapeHtml(p.brand || "–")} · ${p.minTemp}°C – ${p.maxTemp}°C</div>
+        ${p.notes ? `<div class="perfume-card-notes">${escapeHtml(p.notes)}</div>` : ""}
+      </div>
+      <button class="icon-btn" data-id="${p.id}" title="Löschen" aria-label="${escapeHtml(p.name)} löschen">🗑️ Löschen</button>
+    </li>`
     )
     .join("");
 
-  body.querySelectorAll(".icon-btn").forEach((btn) => {
+  list.querySelectorAll(".icon-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       perfumes = perfumes.filter((p) => p.id !== btn.dataset.id);
       savePerfumes();
@@ -249,35 +266,57 @@ function renderColumn(listEl, occasionFilter, cssClass) {
     .join("");
 }
 
+/* -------------------- Ort -------------------- */
+
+function isPlz(query) {
+  return /^\d{5}$/.test(query.trim());
+}
+
+async function resolveLocation(query) {
+  const trimmed = query.trim();
+
+  if (isPlz(trimmed)) {
+    const res = await fetch(`https://api.zippopotam.us/de/${trimmed}`);
+    if (!res.ok) throw new Error("PLZ nicht gefunden");
+    const data = await res.json();
+    const place = data.places && data.places[0];
+    if (!place) throw new Error("PLZ nicht gefunden");
+    return {
+      query: trimmed,
+      label: `${trimmed} ${place["place name"]}`,
+      lat: parseFloat(place.latitude),
+      lon: parseFloat(place.longitude),
+    };
+  }
+
+  const res = await fetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(trimmed)}&count=1&language=de&format=json`
+  );
+  if (!res.ok) throw new Error("Ort nicht gefunden");
+  const data = await res.json();
+  const match = data.results && data.results[0];
+  if (!match) throw new Error("Ort nicht gefunden");
+  return {
+    query: trimmed,
+    label: [match.name, match.admin1, match.country].filter(Boolean).join(", "),
+    lat: match.latitude,
+    lon: match.longitude,
+  };
+}
+
 /* -------------------- Wetter -------------------- */
 
-async function fetchCoordinates() {
-  try {
-    const res = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
-        LOCATION.name
-      )}&count=10&language=de&format=json`
-    );
-    if (!res.ok) throw new Error("Geocoding fehlgeschlagen");
-    const data = await res.json();
-    const match = (data.results || []).find(
-      (r) =>
-        r.country_code === "DE" &&
-        (r.admin1 === "Baden-Württemberg" || (r.postcodes || []).includes(LOCATION.plz))
-    );
-    if (match) return { lat: match.latitude, lon: match.longitude };
-  } catch (e) {
-    console.warn("Geocoding nicht verfügbar, nutze Fallback-Koordinaten.", e);
-  }
-  return { lat: LOCATION.fallbackLat, lon: LOCATION.fallbackLon };
+function updateLocationLabel() {
+  document.getElementById("location-label").textContent = currentLocation.label;
 }
 
 async function fetchWeather() {
   const content = document.getElementById("weather-content");
   content.innerHTML = `<p class="hint">Wetterdaten werden geladen…</p>`;
+  updateLocationLabel();
 
   try {
-    const { lat, lon } = await fetchCoordinates();
+    const { lat, lon } = currentLocation;
     const res = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
         `&current=temperature_2m,weathercode,wind_speed_10m,relative_humidity_2m` +
@@ -297,7 +336,7 @@ async function fetchWeather() {
         <div>${desc}</div>
         <div>💧 Luftfeuchtigkeit: ${current.relative_humidity_2m}%</div>
         <div>💨 Wind: ${current.wind_speed_10m} km/h</div>
-        <div>📍 ${LOCATION.name} (${LOCATION.plz})</div>
+        <div>📍 ${escapeHtml(currentLocation.label)}</div>
       </div>`;
 
     renderRecommendations();
@@ -310,6 +349,33 @@ async function fetchWeather() {
 /* -------------------- Event-Handler -------------------- */
 
 document.getElementById("refresh-weather-btn")?.addEventListener("click", fetchWeather);
+
+document.getElementById("location-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = document.getElementById("location-input");
+  const status = document.getElementById("location-status");
+  const query = input.value.trim();
+  if (!query) return;
+
+  status.textContent = "Ort wird gesucht…";
+  try {
+    currentLocation = await resolveLocation(query);
+    saveLocation();
+    status.textContent = `Ort übernommen: ${currentLocation.label}`;
+    input.value = "";
+    await fetchWeather();
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Ort nicht gefunden. Bitte Ortsnamen oder 5-stellige PLZ prüfen.";
+  }
+});
+
+document.getElementById("location-reset-btn")?.addEventListener("click", async () => {
+  currentLocation = { ...DEFAULT_LOCATION };
+  saveLocation();
+  document.getElementById("location-status").textContent = "";
+  await fetchWeather();
+});
 
 document.getElementById("csv-input")?.addEventListener("change", async (e) => {
   const file = e.target.files[0];
