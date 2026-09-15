@@ -225,10 +225,17 @@ code {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+  flex-wrap: wrap;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.7rem 0.9rem;
+}
+.perfume-card-editing { flex-direction: column; align-items: stretch; }
+.perfume-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex: 0 0 auto;
 }
 .perfume-card-main { min-width: 0; }
 .perfume-card-title {
@@ -272,6 +279,23 @@ code {
   min-width: 44px;
 }
 .icon-btn:hover { filter: brightness(1.1); }
+.icon-btn.edit-btn { background: var(--accent); }
+.icon-btn.cancel-edit-btn { background: #eee5d8; color: var(--accent-dark); }
+.icon-btn.primary-icon-btn { background: #2e7d32; }
+
+.edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.edit-form input, .edit-form select {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  width: 100%;
+}
 
 footer {
   text-align: center;

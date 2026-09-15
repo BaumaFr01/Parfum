@@ -48,6 +48,7 @@ const WEATHER_CODES = {
 let perfumes = loadPerfumes();
 let currentTemp = null;
 let currentLocation = loadLocation();
+let editingId = null;
 
 /* -------------------- Persistenz -------------------- */
 
@@ -191,9 +192,59 @@ function renderList() {
     return;
   }
 
-  list.innerHTML = perfumes
-    .map(
-      (p) => `
+  list.innerHTML = perfumes.map((p) => (p.id === editingId ? renderEditCard(p) : renderPerfumeCard(p))).join("");
+
+  list.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      perfumes = perfumes.filter((p) => p.id !== btn.dataset.id);
+      savePerfumes();
+      renderList();
+      renderRecommendations();
+    });
+  });
+
+  list.querySelectorAll(".edit-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      editingId = btn.dataset.id;
+      renderList();
+    });
+  });
+
+  list.querySelectorAll(".cancel-edit-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      editingId = null;
+      renderList();
+    });
+  });
+
+  list.querySelectorAll(".save-edit-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const name = document.getElementById(`edit-name-${id}`).value.trim();
+      const brand = document.getElementById(`edit-brand-${id}`).value.trim();
+      const occasion = document.getElementById(`edit-occasion-${id}`).value;
+      const minTemp = parseFloat(document.getElementById(`edit-min-${id}`).value);
+      const maxTemp = parseFloat(document.getElementById(`edit-max-${id}`).value);
+      const notes = document.getElementById(`edit-notes-${id}`).value.trim();
+
+      if (!name || !Number.isFinite(minTemp) || !Number.isFinite(maxTemp)) return;
+      if (minTemp > maxTemp) {
+        alert("Min-Temperatur muss kleiner oder gleich der Max-Temperatur sein.");
+        return;
+      }
+
+      const perfume = perfumes.find((p) => p.id === id);
+      Object.assign(perfume, { name, brand, occasion, minTemp, maxTemp, notes });
+      savePerfumes();
+      editingId = null;
+      renderList();
+      renderRecommendations();
+    });
+  });
+}
+
+function renderPerfumeCard(p) {
+  return `
     <li class="perfume-card">
       <div class="perfume-card-main">
         <div class="perfume-card-title">
@@ -203,25 +254,43 @@ function renderList() {
         <div class="perfume-card-meta">${escapeHtml(p.brand || "–")} · ${p.minTemp}°C – ${p.maxTemp}°C</div>
         ${p.notes ? `<div class="perfume-card-notes">${escapeHtml(p.notes)}</div>` : ""}
       </div>
-      <button class="icon-btn" data-id="${p.id}" title="Löschen" aria-label="${escapeHtml(p.name)} löschen">🗑️ Löschen</button>
-    </li>`
-    )
-    .join("");
+      <div class="perfume-card-actions">
+        <button class="icon-btn edit-btn" data-id="${p.id}" title="Bearbeiten" aria-label="${escapeHtml(p.name)} bearbeiten">✏️ Bearbeiten</button>
+        <button class="icon-btn delete-btn" data-id="${p.id}" title="Löschen" aria-label="${escapeHtml(p.name)} löschen">🗑️ Löschen</button>
+      </div>
+    </li>`;
+}
 
-  list.querySelectorAll(".icon-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      perfumes = perfumes.filter((p) => p.id !== btn.dataset.id);
-      savePerfumes();
-      renderList();
-      renderRecommendations();
-    });
-  });
+function renderEditCard(p) {
+  return `
+    <li class="perfume-card perfume-card-editing">
+      <div class="edit-form">
+        <input type="text" id="edit-name-${p.id}" value="${escapeAttr(p.name)}" placeholder="Name">
+        <input type="text" id="edit-brand-${p.id}" value="${escapeAttr(p.brand || "")}" placeholder="Marke">
+        <select id="edit-occasion-${p.id}">
+          <option value="beides" ${p.occasion === "beides" ? "selected" : ""}>Beides</option>
+          <option value="buero" ${p.occasion === "buero" ? "selected" : ""}>Büro</option>
+          <option value="freizeit" ${p.occasion === "freizeit" ? "selected" : ""}>Freizeit</option>
+        </select>
+        <input type="number" id="edit-min-${p.id}" value="${p.minTemp}" placeholder="Min °C">
+        <input type="number" id="edit-max-${p.id}" value="${p.maxTemp}" placeholder="Max °C">
+        <input type="text" id="edit-notes-${p.id}" value="${escapeAttr(p.notes || "")}" placeholder="Notiz">
+      </div>
+      <div class="perfume-card-actions">
+        <button class="icon-btn save-edit-btn primary-icon-btn" data-id="${p.id}">💾 Speichern</button>
+        <button class="icon-btn cancel-edit-btn" data-id="${p.id}">Abbrechen</button>
+      </div>
+    </li>`;
 }
 
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
+}
+
+function escapeAttr(str) {
+  return escapeHtml(str).replace(/"/g, "&quot;");
 }
 
 /* -------------------- Rendering: Empfehlungen -------------------- */
