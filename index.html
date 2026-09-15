@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parfüm-Wetter-Berater</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>🌡️ Parfüm-Wetter-Berater</h1>
+  <p class="subtitle">Das passende Parfüm für Leinzell (73575) – abgestimmt auf das aktuelle Wetter</p>
+</header>
+
+<main>
+  <!-- Wetter -->
+  <section class="card" id="weather-card">
+    <h2>Aktuelles Wetter · 73575 Leinzell</h2>
+    <div id="weather-content" class="weather-content">
+      <p class="hint">Wetterdaten werden geladen…</p>
+    </div>
+    <button id="refresh-weather-btn" class="btn secondary">🔄 Wetter aktualisieren</button>
+  </section>
+
+  <!-- Empfehlungen -->
+  <section class="card" id="recommendation-card">
+    <h2>Empfohlene Parfüms</h2>
+    <div class="recommendation-columns">
+      <div class="recommendation-column">
+        <h3>🏢 Büro</h3>
+        <ul id="office-list" class="recommendation-list"><li class="hint">Warte auf Wetterdaten…</li></ul>
+      </div>
+      <div class="recommendation-column">
+        <h3>🌳 Freizeit</h3>
+        <ul id="leisure-list" class="recommendation-list"><li class="hint">Warte auf Wetterdaten…</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upload -->
+  <section class="card" id="upload-card">
+    <h2>Parfüm-Liste hochladen</h2>
+    <p class="hint">
+      CSV-Datei mit den Spalten <code>Name,Marke,Anlass,MinTemp,MaxTemp,Notiz</code>.
+      Anlass: <code>Büro</code>, <code>Freizeit</code> oder <code>Beides</code>. Trennzeichen <code>,</code> oder <code>;</code>.
+    </p>
+    <div class="upload-row">
+      <input type="file" id="csv-input" accept=".csv,text/csv">
+      <button id="load-sample-btn" class="btn secondary">Beispiel laden</button>
+      <button id="clear-list-btn" class="btn danger">Liste leeren</button>
+    </div>
+    <p id="upload-status" class="hint"></p>
+  </section>
+
+  <!-- Manuelle Eingabe -->
+  <section class="card" id="manual-add-card">
+    <h2>Parfüm manuell hinzufügen</h2>
+    <form id="add-form" class="add-form">
+      <input type="text" id="f-name" placeholder="Name" required>
+      <input type="text" id="f-brand" placeholder="Marke">
+      <select id="f-occasion">
+        <option value="beides">Beides</option>
+        <option value="buero">Büro</option>
+        <option value="freizeit">Freizeit</option>
+      </select>
+      <input type="number" id="f-min" placeholder="Min °C" required>
+      <input type="number" id="f-max" placeholder="Max °C" required>
+      <input type="text" id="f-notes" placeholder="Notiz (optional)">
+      <button type="submit" class="btn primary">Hinzufügen</button>
+    </form>
+  </section>
+
+  <!-- Liste -->
+  <section class="card" id="list-card">
+    <h2>Meine Parfüm-Liste (<span id="list-count">0</span>)</h2>
+    <div class="table-wrap">
+      <table id="perfume-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Marke</th><th>Anlass</th><th>Temp.-Bereich</th><th>Notiz</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="perfume-table-body">
+          <tr><td colspan="6" class="hint">Noch keine Parfüms hinterlegt.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Wetterdaten: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
