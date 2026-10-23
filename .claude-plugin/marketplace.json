@@ -1,0 +1,5 @@
+{
+  "name": "baumafr01-mods",
+  "owner": { "name": "Frank Baumann" },
+  "plugins": [{ "name": "cache-band", "source": "./plugins/cache-band", "description": "Leiste über dem Eingabefeld: Prompt-Cache-Restzeit, Cache-Hit-Rate, Kontext-Wetter und Compact-Button" }]
+}
